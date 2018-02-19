@@ -1,0 +1,85 @@
+import ddf.minim.*;
+import ddf.minim.ugens.*;
+
+Minim minim;
+AudioOutput out;
+
+ArrayList<Character> notesPressed;
+ArrayList<Character> allowedNotes;
+FloatDict noteFrequencies;
+
+void setup()
+{
+  size(500, 500, P3D);
+  minim = new Minim(this);
+  out = minim.getLineOut(Minim.MONO, 1024 ); // use the getLineOut method of the Minim object to get an AudioOutput object
+ 
+  notesPressed = new ArrayList();
+  allowedNotes = new ArrayList();
+  noteFrequencies = new FloatDict();
+  
+  allowedNotes.add('a');
+  allowedNotes.add('w');
+  allowedNotes.add('s');
+  allowedNotes.add('e');
+  allowedNotes.add('d');
+  allowedNotes.add('f');
+  allowedNotes.add('t');
+  allowedNotes.add('g');
+  allowedNotes.add('y');
+  allowedNotes.add('h');
+  allowedNotes.add('u');
+  allowedNotes.add('j');
+  allowedNotes.add('k');
+  noteFrequencies.set("a", 261.626);
+  noteFrequencies.set("w", 277.183);
+  noteFrequencies.set("s", 293.665);
+  noteFrequencies.set("e", 293.665);
+  noteFrequencies.set("d", 293.665);
+  noteFrequencies.set("f", 293.665);
+  noteFrequencies.set("t", 293.665);
+  noteFrequencies.set("g", 293.665);
+  noteFrequencies.set("y", 293.665);
+  noteFrequencies.set("h", 293.665);
+  noteFrequencies.set("u", 293.665);
+  noteFrequencies.set("j", 293.665);
+  noteFrequencies.set("k", 293.665);
+
+}
+
+void draw()
+{
+  background(250,240,230);
+  stroke(0);
+  strokeWeight(1);
+  
+  // draw the waveform of the output
+  for(int i = 25; i < out.bufferSize() - 550; i++)
+  {
+    line( i, 100  - out.mix.get(i)*50,  i - 1, 100  - out.mix.get(i+1)*50 );
+  }
+
+  playNotes();
+}
+
+void keyPressed()
+{
+    if(!notesPressed.contains(key) && allowedNotes.contains(key)){
+      notesPressed.add(key);
+    }
+    print("Currently Pressed note: " + notesPressed + "\n");  
+}
+
+void keyReleased() 
+{
+    if(notesPressed.contains(key) && allowedNotes.contains(key)){
+      notesPressed.remove((Character) key);
+    }
+    print("Currently Pressed notes: " + notesPressed + "\n");  
+}
+
+void playNotes(){
+  for(int i = 0; i < notesPressed.size(); i++){
+    out.playNote( 0.0, .9, new SineInstrument( noteFrequencies.get(notesPressed.get(i) + "" )));
+  }
+} 

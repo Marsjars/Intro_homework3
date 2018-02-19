@@ -1,0 +1,35 @@
+// to make an Instrument we must define a class that implements the Instrument interface.
+// Sine Instrument
+class SineInstrument implements Instrument
+{
+  
+  Oscil wave;
+  ADSR adsr;
+  
+  SineInstrument( float frequency )
+  {
+    // make a sine wave oscillator
+    wave   = new Oscil( frequency, 1, Waves.SINE );
+    adsr = new ADSR( .7, 0.1, 0.1, 1, .5, .3, .3 );
+    wave.patch( adsr );
+  } 
+  
+  void noteOn( float duration ) // this is called by the sequencer when this instrument should start making sound.
+  {
+    // turn on the adsr
+    adsr.noteOn();
+    // patch the adsr into the output
+    adsr.patch( out );
+  }
+  
+  void noteOff()
+ {
+    // turn off the note in the adsr
+    
+    // but don't unpatch until the release is through
+    adsr.unpatchAfterRelease( out );
+    
+    adsr.noteOff();
+  }
+  
+}
